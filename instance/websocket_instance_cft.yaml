@@ -64,9 +64,9 @@ Resources:
 
           PYTHON=/usr/bin/python3.12
           PIP=/usr/bin/pip3.12
-          SCRIPT_PATH=/root/websocket_script_coinbase.py
+          SCRIPT_PATH=/root/websocket_script_coinbase_v2.py
 
-          aws s3 cp s3://greatestbucketever/websocket_folder/websocket_script_coinbase.py $SCRIPT_PATH
+          aws s3 cp s3://greatestbucketever/websocket_folder/websocket_script_coinbase_v2.py $SCRIPT_PATH
           $PIP install boto3==1.42.67 websockets==16.0   # lock versions for stability
 
           cat > /etc/systemd/system/coinbase_websocket.service << EOL

@@ -1,0 +1,9 @@
+{
+  "channel": "market_trades",
+  "product_id": "BTC-USD",
+  "trade_id": "981804955",
+  "price": "74040",
+  "size": "0.00008424",
+  "time": "2026-03-16T20:33:24.763495Z",
+  "side": "SELL"
+}

@@ -1,0 +1,20 @@
+{
+    "invocationId": "085d3401-c076-4054-b657-2a1c01dd107c",
+    "sourceKinesisStreamArn": "arn:aws:kinesis:us-east-1:391262527903:stream/raw-trade-data",
+    "deliveryStreamArn": "arn:aws:firehose:us-east-1:391262527903:deliverystream/KDS-S3-trade-data",
+    "region": "us-east-1",
+    "records": [
+        {
+            "recordId": "shardId-00000000000200000000000000000000000000000000000000000000000000000000000000000000000049669534775090560008083220088837278296638367081844178978000000000000",
+            "approximateArrivalTimestamp": 1765030657336,
+            "data": "eyJjaGFubmVsIjoibWFya2V0X3RyYWRlcyIsInRpbWVzdGFtcCI6IjIwMjYtMDMtMTZUMjA6MzM6MjQuNzk5MTE3MjAzWiIsInNlcXVlbmNlX251bSI6MTAsImV2ZW50cyI6W3sidHlwZSI6InVwZGF0ZSIsInRyYWRlcyI6W3sicHJvZHVjdF9pZCI6IkJUQy1VU0QiLCJ0cmFkZV9pZCI6Ijk4MTgwNDk1NSIsInByaWNlIjoiNzQwNDAiLCJzaXplIjoiMC4wMDAwODQyNCIsInRpbWUiOiIyMDI2LTAzLTE2VDIwOjMzOjI0Ljc2MzQ5NVoiLCJzaWRlIjoiU0VMTCJ9LHsicHJvZHVjdF9pZCI6IkJUQy1VU0QiLCJ0cmFkZV9pZCI6Ijk4MTgwNDk1NCIsInByaWNlIjoiNzQwMzcuNTYiLCJzaXplIjoiMC4wMDAxMTc3NSIsInRpbWUiOiIyMDI2LTAzLTE2VDIwOjMzOjI0LjcyMzA2MloiLCJzaWRlIjoiU0VMTCJ9LHsicHJvZHVjdF9pZCI6IkJUQy1VU0QiLCJ0cmFkZV9pZCI6Ijk4MTgwNDk1MyIsInByaWNlIjoiNzQwMzciLCJzaXplIjoiMC4wMDAxNDk3IiwidGltZSI6IjIwMjYtMDMtMTZUMjA6MzM6MjQuNzIzMDYyWiIsInNpZGUiOiJTRUxMIn1dfV19",
+            "kinesisRecordMetadata": {
+                "sequenceNumber": "49669534775090560008083220088837278296638367081844178978",
+                "subsequenceNumber": 0,
+                "partitionKey": "BTCUSDT-aggTrade",
+                "shardId": "shardId-000000000002",
+                "approximateArrivalTimestamp": 1765030657336
+            }
+        }
+    ]
+}
