@@ -2,8 +2,8 @@
 
 SELECT
     symbol,
-    tradeTime,
-    CAST(price AS DECIMAL(18, 8))
+    price
+    tradeTime
 FROM
     {{ ref('raw_coinbase_data') }}
 WHERE

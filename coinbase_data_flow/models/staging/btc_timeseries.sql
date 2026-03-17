@@ -1,8 +1,8 @@
 {{ config(materialized='view') }}
 
 SELECT
-    CAST(price AS DECIMAL(18, 8)),
-    CAST(quantity AS DECIMAL(18, 8)),
+    price,
+    quantity,
     tradeTime
 FROM
     {{ ref('raw_coinbase_data') }}
