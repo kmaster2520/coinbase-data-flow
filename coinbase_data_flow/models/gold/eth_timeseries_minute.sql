@@ -8,8 +8,9 @@ SELECT
     COUNT(CASE WHEN side = 'BUY' THEN 1 END) as numBuys,
     COUNT(CASE WHEN side = 'SELL' THEN 1 END) as numSells
 FROM
-    {{ ref('eth_timeseries') }}
+    {{ ref('trades_timeseries') }}
 WHERE
     tradeTime >= current_timestamp() - INTERVAL 7 DAY
+    AND symbol = 'ETH-USD'
 GROUP BY
     tradeMinute

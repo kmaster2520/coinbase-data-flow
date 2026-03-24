@@ -16,16 +16,16 @@ with ranked as (
         {{ ref('raw_coinbase_data') }}
     WHERE
         eventType = 'market_trades'
-        and symbol = 'BTC-USD'
         and tradeTime >= current_timestamp() - INTERVAL 90 DAY
         and tradeTime >= '2026-03-17'
 )
 
 select
-    tradeTime,
     side,
+    symbol,
     price,
     quantity,
+    tradeTime,
     tradeId
 FROM
     ranked

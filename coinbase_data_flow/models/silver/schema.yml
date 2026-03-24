@@ -1,17 +1,18 @@
 version: 2
 
 models:
-  - name: btc_timeseries
+  - name: trades_timeseries
     columns:
       - name: tradeId
-        description: "Unique trade id"
         tests:
-          - unique
           - not_null
-  - name: eth_timeseries
-    columns:
-      - name: tradeId
-        description: "Unique trade id"
+      - name: symbol
         tests:
-          - unique
           - not_null
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          name: unique_trade_id_per_symbol
+          description: "Unique Trade ID for Symbol"
+          combination_of_columns:
+            - tradeId
+            - symbol
