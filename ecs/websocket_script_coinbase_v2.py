@@ -55,7 +55,7 @@ async def begin_stream(*, symbol="BTC-USD"):
     subscribe_message = {
         "type": "subscribe",
         "channel": "market_trades",
-        "product_ids": [symbol]
+        "product_ids": symbol.split(",")
     }
 
     unsubscribe_message = {
