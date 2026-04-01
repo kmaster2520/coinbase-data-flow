@@ -25,7 +25,7 @@ class EndpointsStack(Stack):
             self,
             "InstanceSecurityGroup",
             vpc=vpc,
-            description="Enable SSH and HTTP access via port 22 and 80",
+            description="Enable SSH and HTTPS access via port 22 and 443",
         )
         instance_sg.add_ingress_rule(
             ec2.Peer.any_ipv4(),
@@ -36,6 +36,16 @@ class EndpointsStack(Stack):
             ec2.Peer.any_ipv4(),
             ec2.Port.tcp(2222),
             "Enable EC2 Instance connect",
+        )
+        instance_sg.add_egress_rule(
+            ec2.Peer.any_ipv4(),
+            ec2.Port.tcp(443),
+            "Enable outward HTTPS traffic",
+        )
+        instance_sg.add_egress_rule(
+            ec2.Peer.any_ipv4(),
+            ec2.Port.tcp(80),
+            "Enable outward HTTP traffic",
         )
         cdk.Tags.of(instance_sg).add("Application", "CoinbaseDataFlow")
 
@@ -73,12 +83,12 @@ class EndpointsStack(Stack):
             private_dns_enabled=True,
         )
 
-        ec2.GatewayVpcEndpoint(
-            self,
-            "S3GatewayEndpoint",
-            vpc=vpc,
-            service=ec2.GatewayVpcEndpointAwsService.S3,
-        )
+        # ec2.GatewayVpcEndpoint(
+        #     self,
+        #     "S3GatewayEndpoint",
+        #     vpc=vpc,
+        #     service=ec2.GatewayVpcEndpointAwsService.S3,
+        # )
 
         cdk.CfnOutput(self, "InstanceSGId", value=instance_sg.security_group_id)
         cdk.CfnOutput(self, "KinesisEndpointSGId", value=kinesis_endpoint_sg.security_group_id)

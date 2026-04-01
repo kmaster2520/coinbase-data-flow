@@ -1,34 +1,30 @@
-# Coinbase Data Flow
+# Real-Time Cryptocurrency Trade Ingestion Pipeline
 
-README in progress
+This is a scalable data streaming pipeline that 
+ingests over 1.3 million cryptocurrency trades a day from 
+Coinbase Websocket API
+
 
 ## Tools/Services Used
 
-Infrastructure Creation
+### Data Ingestion
 
-| Feature                 | Tool                  | Purpose   |
-|-------------------------|-----------------------|-----------|
-| Infrastructure Creation | AWS CloudFormation    | s         |
-| Infrastructure Creation | AWS CLI (BASH)        | s         |
-| Data Ingestion          | AWS EC2               | s         |
-| Data Ingestion          | AWS Kinesis           | s         |
-| Data Ingestion          | AWS Firehose + Lambda | s         |
-| Data Store              | AWS S3                | s         |
-| Data Transformation     | DBT                   | s         |
-
-## Architecture Diagram
-
-TODO
+A Python script (`ecs/websocket_script_coinbase_v2.py`)
+subscribes to the Coinbase Websocket API. 
+The script is put into a Docker image and deployed as an ECS task. 
+The ECS cluster uses the EC2 launch type, primarily for cost savings.
 
 
+### VPC Infrastructure
 
-### Why EC2 over ECS
+The ECS cluster is deployed to a VPC private subnet. As the ECS task needs
+to send requests to an external API, a NAT gateway is needed in a public subnet.  
 
-EC2 and ECS are both capable of running scripts, however the websocket script is very simple and only requires 
-Python, and few `pip install` commands to run. This setup works almost universally across Linux platforms and architectures
-(x86 and ARM). 
+In addition, a Kinesis Endpoint were created to direct traffic to AWS Kinesis 
+along the AWS backbone, a small optimization.
 
-EC2 requires less overhead (no container registry setup, no image creation), and is easier to set up. So I decided
-to use EC2 as the platform for the Python websocket script for streaming live trade data.
+
+
+
 
 
