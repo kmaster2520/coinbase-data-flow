@@ -32,11 +32,6 @@ class EndpointsStack(Stack):
             ec2.Port.tcp(22),
             "Allow SSH access from anywhere",
         )
-        instance_sg.add_ingress_rule(
-            ec2.Peer.any_ipv4(),
-            ec2.Port.tcp(2222),
-            "Enable EC2 Instance connect",
-        )
         instance_sg.add_egress_rule(
             ec2.Peer.any_ipv4(),
             ec2.Port.tcp(443),

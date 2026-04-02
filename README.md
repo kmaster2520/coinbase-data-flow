@@ -57,6 +57,73 @@ In addition, a Kinesis Endpoint were created to direct traffic to AWS Kinesis
 along the AWS backbone, a small optimization.
 
 
+## Deployment
+
+### Prerequisites
+
+The following must already exist in the AWS account and region of deployment:
+* A VPC with at least one public subnet and one private subnet with route tables
+  * A NAT Gateway in the public subnet
+* An S3 bucket
+* CDK must be bootstrapped
+* Databricks resources for S3 External Location access must be deployed (automatic process from Databricks)
+
+Additionally, AWS CLI and cdk must be installed locally, with valid AWS credentials for deploying 
+the appropriate resources, including IAM policies and roles.
+
+### Endpoints Deployment
+
+To deploy the required endpoints to the VPC, `cd` into the `cdk` folder. 
+Set the correct environment variables for VPC ID and *private* subnet ID.
+This CDK also creates a security group that we will need to attach to the EC2 instance(s) that
+is managed by the ECS cluster. Save the ID for that security group.
+
+```commandline
+VPC_ID="<replace>"
+SUBNET_ID="<replace>"
+cdk deploy CryptoTradeEndpoints --context vpc_id=$VPC_ID --context subnet_id=$SUBNET_ID
+```
+
+### Kinesis and Firehose Resource Deployment
+
+This stack contains the Kinesis Data Stream, Firehose, and the Lambda function used for data transformation.
+To deploy these resources, `cd` into the `cdk` folder, if you have not already done so. 
+Set the correct environment variables for the S3 Bucket name.
+
+```commandline
+BUCKET_NAME="<replace>"
+cdk deploy CryptoTradeFirehose --context bucket_name=$BUCKET_NAME
+```
+
+### ECS Deployment
+
+To deploy these resources, `cd` into the `ecs` folder, if you have not already done so. 
+
+#### Building the Image
+
+To build the Docker image, run one of the two commands:
+This command builds for a single architecture, the default for your local machine
+```commandline
+docker build -f ecs/Dockerfile -t coinbase-websocket .
+```
+or (if buildx is installed, and multi-arch image build is enabled):
+```commandline
+docker buildx build --platform linux/arm64,linux/amd64 -f ecs/Dockerfile -t coinbase-websocket . --load
+```
+
+then run the following to push the image to the ECR (fix placeholders in `ECR_IMAGE_URI`):
+```commandline
+ECR_IMAGE_URI="<aws-account-id>.dkr.ecr.<region>.amazonaws.com/coinbase-websocket:latest"
+docker tag coinbase-websocket $ECR_IMAGE_URI
+docker push $ECR_IMAGE_URI
+```
+
+#### Deploying the ECS Cluster and Task
+
+
+
+
+
 
 
 

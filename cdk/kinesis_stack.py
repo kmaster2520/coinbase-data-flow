@@ -9,7 +9,6 @@ from aws_cdk import (
 )
 from constructs import Construct
 
-S3_BUCKET = "greatestbucketever"
 S3_PREFIX = "coinbase/raw/!{timestamp:yyyy/MM/dd}/"
 STREAM_NAME = "raw-trade-data"
 FIREHOSE_NAME = "KDS-S3-trade-data"
@@ -18,6 +17,8 @@ FIREHOSE_NAME = "KDS-S3-trade-data"
 class FirehoseTransformStack(Stack):
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
+
+        bucket_name = self.node.try_get_context("bucket_name")
 
         # --- Lambda transform ---
         lambda_role = iam.Role(
@@ -109,8 +110,8 @@ class FirehoseTransformStack(Stack):
                                 "s3:PutObject",
                             ],
                             resources=[
-                                f"arn:aws:s3:::{S3_BUCKET}",
-                                f"arn:aws:s3:::{S3_BUCKET}/*",
+                                f"arn:aws:s3:::{bucket_name}",
+                                f"arn:aws:s3:::{bucket_name}/*",
                             ],
                         )
                     ]
@@ -144,7 +145,7 @@ class FirehoseTransformStack(Stack):
                 role_arn=firehose_role.role_arn,
             ),
             extended_s3_destination_configuration=firehose.CfnDeliveryStream.ExtendedS3DestinationConfigurationProperty(
-                bucket_arn=f"arn:aws:s3:::{S3_BUCKET}",
+                bucket_arn=f"arn:aws:s3:::{bucket_name}",
                 prefix=S3_PREFIX,
                 error_output_prefix="coinbase/errors/type=!{firehose:error-output-type}/!{timestamp:yyyy/MM/dd}/",
                 role_arn=firehose_role.role_arn,
