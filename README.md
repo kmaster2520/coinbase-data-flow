@@ -78,13 +78,15 @@ the appropriate resources, including IAM policies and roles.
 To deploy the required endpoints to the VPC, `cd` into the `cdk` folder. 
 Set the correct environment variables for VPC ID and *private* subnet ID.
 This CDK also creates a security group that we will need to attach to the EC2 instance(s) that
-is managed by the ECS cluster. Save the ID for that security group.
+is managed by the ECS cluster.
 
 ```commandline
 VPC_ID="<replace>"
 SUBNET_ID="<replace>"
 cdk deploy CryptoTradeEndpoints --context vpc_id=$VPC_ID --context subnet_id=$SUBNET_ID
 ```
+
+Save the ID for the instance security group.
 
 ### Kinesis and Firehose Resource Deployment
 
@@ -126,7 +128,39 @@ docker push $ECR_IMAGE_URI
 
 #### Deploying the ECS Cluster and Task
 
+The ECS Cluster and Task are specified in the CloudFormation template `ecs/websocket_ecs_cft.yaml`.
 
+To deploy the ECS stack for the first time, `cd` into the `ecs` folder and run (replace placeholders below):
+```commandline
+SUBNET_ID="<private subnet id>"
+SECURITY_GROUP_ID="<instance sg from endpoints deployment>"
+ECR_IMAGE_URI="<same as from image build>"
+
+PRODUCT_IDS="BTC-USD,ETH-USD" # this is an example value, multiple streams must be separated by commas
+
+aws cloudformation create-stack \
+  --stack-name CoinbaseECSCluster \
+  --template-body file://websocket_ecs_cft.yaml \
+  --parameters \
+      ParameterKey=SubnetId,ParameterValue=$SUBNET_ID \
+      ParameterKey=SecurityGroupId,ParameterValue=$SECURITY_GROUP_ID \
+      ParameterKey=EcrImageUri,ParameterValue=$ECR_IMAGE_URI \
+      ParameterKey=CoinbaseProductId,ParameterValue="$PRODUCT_IDS" \
+  --capabilities CAPABILITY_NAMED_IAM
+```
+
+To update the stack with a new list of product IDs to subscribe to (or simply rehydrate the setup):
+```commandline
+PRODUCT_IDS="BTC-USD,ETH-USD"
+#PRODUCT_IDS="LTC-USD"
+
+aws cloudformation deploy \
+  --stack-name CoinbaseECSCluster \
+  --template-file websocket_ecs_cft.yaml \
+  --parameter-overrides \
+      CoinbaseProductId="$PRODUCT_IDS" \
+  --capabilities CAPABILITY_NAMED_IAM
+```
 
 
 
