@@ -65,7 +65,9 @@ The following must already exist in the AWS account and region of deployment:
 * A VPC with at least one public subnet and one private subnet with route tables
   * A NAT Gateway in the public subnet
 * An S3 bucket
-* CDK must be bootstrapped
+* CDK must be bootstrapped (run `cdk bootstrap`)
+* An ECR registry and repo for the websocket script
+  * AWS CLI command: `aws ecr create-repository --repository-name coinbase-websocket --region us-east-1`
 * Databricks resources for S3 External Location access must be deployed (automatic process from Databricks)
 
 Additionally, AWS CLI and cdk must be installed locally, with valid AWS credentials for deploying 
