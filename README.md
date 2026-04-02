@@ -7,7 +7,8 @@ catalog.
 
 ## Tools/Services Used
 
-![Architecture Diagram](images/arch_diagram.png)
+<img src="images/arch_diagram.png" width="60%" />
+
 
 ### Data Ingestion
 
