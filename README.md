@@ -103,7 +103,7 @@ To deploy these resources, `cd` into the `ecs` folder, if you have not already d
 
 #### Building the Image
 
-To build the Docker image, run one of the two commands:
+To build the Docker image, run one of the two commands from the repository root:
 This command builds for a single architecture, the default for your local machine
 ```commandline
 docker build -f ecs/Dockerfile -t coinbase-websocket .
@@ -113,9 +113,13 @@ or (if buildx is installed, and multi-arch image build is enabled):
 docker buildx build --platform linux/arm64,linux/amd64 -f ecs/Dockerfile -t coinbase-websocket . --load
 ```
 
-then run the following to push the image to the ECR (fix placeholders in `ECR_IMAGE_URI`):
+then run the following to push the image to the ECR (fix placeholders):
 ```commandline
-ECR_IMAGE_URI="<aws-account-id>.dkr.ecr.<region>.amazonaws.com/coinbase-websocket:latest"
+AWS_REGION="<region>"
+ECR_NAME="<aws-account-id>.dkr.ecr.${AWS_REGION}.amazonaws.com"
+aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin "$ECR_NAME"
+
+ECR_IMAGE_URI="$ECR_NAME/coinbase-websocket:latest"
 docker tag coinbase-websocket $ECR_IMAGE_URI
 docker push $ECR_IMAGE_URI
 ```
