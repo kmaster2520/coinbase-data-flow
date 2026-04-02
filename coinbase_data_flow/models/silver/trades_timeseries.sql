@@ -1,8 +1,9 @@
 {{ config(
     materialized='incremental',
-    unique_key = 'tradeId',
+    unique_key=['tradeId', 'symbol'],
     incremental_strategy = 'merge',
-    on_schema_change = 'sync_all_columns'
+    on_schema_change = 'sync_all_columns',
+    post_hook = "DELETE FROM {{ this }} WHERE tradeTime < CURRENT_DATE() - INTERVAL '90 DAYS'"
 ) }}
 
 with ranked as (
@@ -17,7 +18,6 @@ with ranked as (
     WHERE
         eventType = 'market_trades'
         and tradeTime >= current_timestamp() - INTERVAL 90 DAY
-        and tradeTime >= '2026-03-17'
 )
 
 select
