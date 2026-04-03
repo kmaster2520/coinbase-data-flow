@@ -129,6 +129,7 @@ docker push $ECR_IMAGE_URI
 #### Deploying the ECS Cluster and Task
 
 The ECS Cluster and Task are specified in the CloudFormation template `ecs/websocket_ecs_cft.yaml`.
+(Migration to CDK planned)
 
 To deploy the ECS stack for the first time, `cd` into the `ecs` folder and run (replace placeholders below):
 ```commandline
