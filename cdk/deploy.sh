@@ -8,18 +8,25 @@ BUCKET_NAME="greatestbucketever"
 ECR_IMAGE_URI="${AWS_ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com/coinbase-websocket:latest"
 PRODUCT_ID="BTC-USD,ETH-USD,LTC-USD"
 
+
 cdk deploy CryptoTradeEndpoints --context vpc_id=$VPC_ID --context subnet_id=$SUBNET_ID
 
-cdk synth CryptoTradeFirehose --context bucket_name=$BUCKET_NAME
-cdk deploy CryptoTradeFirehose --context bucket_name=$BUCKET_NAME
+cdk deploy CryptoTradeEndpoints \
+  --context bucket_name=$BUCKET_NAME \
+  --context subnet_id=$SUBNET_ID \
+  --context vpc_id=$VPC_ID \
+  --context ecr_image_uri=$ECR_IMAGE_URI \
+  --context product_id=$PRODUCT_ID
 
-cdk synth CryptoWebsocketApp \
+cdk deploy CryptoTradeFirehose \
+  --context bucket_name=$BUCKET_NAME \
   --context subnet_id=$SUBNET_ID \
   --context vpc_id=$VPC_ID \
   --context ecr_image_uri=$ECR_IMAGE_URI \
   --context product_id=$PRODUCT_ID
 
 cdk deploy CryptoWebsocketApp \
+  --context bucket_name=$BUCKET_NAME \
   --context subnet_id=$SUBNET_ID \
   --context vpc_id=$VPC_ID \
   --context ecr_image_uri=$ECR_IMAGE_URI \

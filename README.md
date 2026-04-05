@@ -72,7 +72,19 @@ The following must already exist in the AWS account and region of deployment:
 * Databricks resources for S3 External Location access must be deployed (automatic process from Databricks)
 
 Additionally, AWS CLI and cdk must be installed locally, with valid AWS credentials for deploying 
-the appropriate resources, including IAM policies and roles.
+the appropriate resources, including IAM policies and roles.  
+
+Run the following before running `cdk` commands (replace placeholders):
+
+```commandline
+AWS_REGION="us-east-1"
+AWS_ACCOUNT="<aws-account-number>"
+VPC_ID="<your-vpc-id>"
+SUBNET_ID="<private-subnet-id>"
+BUCKET_NAME="<bucket-name>"
+ECR_IMAGE_URI="${AWS_ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com/coinbase-websocket:latest"
+PRODUCT_ID="BTC-USD,ETH-USD,LTC-USD"
+```
 
 ### Endpoints Deployment
 
@@ -82,9 +94,12 @@ This CDK also creates a security group that we will need to attach to the EC2 in
 is managed by the ECS cluster.
 
 ```commandline
-VPC_ID="<replace>"
-SUBNET_ID="<replace>"
-cdk deploy CryptoTradeEndpoints --context vpc_id=$VPC_ID --context subnet_id=$SUBNET_ID
+cdk deploy CryptoTradeEndpoints \
+  --context bucket_name=$BUCKET_NAME \
+  --context subnet_id=$SUBNET_ID \
+  --context vpc_id=$VPC_ID \
+  --context ecr_image_uri=$ECR_IMAGE_URI \
+  --context product_id=$PRODUCT_ID
 ```
 
 Save the ID for the instance security group.
@@ -92,12 +107,15 @@ Save the ID for the instance security group.
 ### Kinesis and Firehose Resource Deployment
 
 This stack contains the Kinesis Data Stream, Firehose, and the Lambda function used for data transformation.
-To deploy these resources, `cd` into the `cdk` folder, if you have not already done so. 
-Set the correct environment variables for the S3 Bucket name.
+To deploy these resources, `cd` into the `cdk` folder, if you have not already done so.
 
 ```commandline
-BUCKET_NAME="<replace>"
-cdk deploy CryptoTradeFirehose --context bucket_name=$BUCKET_NAME
+cdk deploy CryptoTradeFirehose \
+  --context bucket_name=$BUCKET_NAME \
+  --context subnet_id=$SUBNET_ID \
+  --context vpc_id=$VPC_ID \
+  --context ecr_image_uri=$ECR_IMAGE_URI \
+  --context product_id=$PRODUCT_ID
 ```
 
 ### ECS Deployment
@@ -118,8 +136,7 @@ docker buildx build --platform linux/arm64,linux/amd64 -f ecs/Dockerfile -t coin
 
 then run the following to push the image to the ECR (fix placeholders):
 ```commandline
-AWS_REGION="<region>"
-ECR_NAME="<aws-account-id>.dkr.ecr.${AWS_REGION}.amazonaws.com"
+ECR_NAME="${AWS_ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com"
 aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin "$ECR_NAME"
 
 ECR_IMAGE_URI="$ECR_NAME/coinbase-websocket:latest"
@@ -136,12 +153,8 @@ the instance's security group, and all required IAM policies and roles.
 To deploy the CDK, run these commands (Set the correct environment variables for VPC ID and *private* subnet ID):
 
 ```commandline
-VPC_ID="<replace>"
-SUBNET_ID="<replace>"
-ECR_IMAGE_URI="<get-from-above>"
-PRODUCT_ID="BTC-USD,ETH-USD" # example values, can be changed
-
 cdk deploy CryptoWebsocketApp \
+  --context bucket_name=$BUCKET_NAME \
   --context subnet_id=$SUBNET_ID \
   --context vpc_id=$VPC_ID \
   --context ecr_image_uri=$ECR_IMAGE_URI \

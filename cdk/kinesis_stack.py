@@ -176,7 +176,11 @@ class FirehoseTransformStack(Stack):
                                     parameter_value="60",
                                 ),
                             ],
-                        )
+                        ),
+                        firehose.CfnDeliveryStream.ProcessorProperty(
+                            type="AppendDelimiterToRecord",
+                            parameters=[],
+                        ),
                     ],
                 ),
             ),
