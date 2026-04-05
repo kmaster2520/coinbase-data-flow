@@ -5,10 +5,10 @@
 #
 # Push to ECR:
 #   aws login
-#   aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 391262527903.dkr.ecr.us-east-1.amazonaws.com
+#   aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com
 #   docker build -f ecs/Dockerfile -t coinbase-websocket .
-#   docker tag coinbase-websocket 391262527903.dkr.ecr.us-east-1.amazonaws.com/coinbase-websocket:latest
-#   docker push 391262527903.dkr.ecr.us-east-1.amazonaws.com/coinbase-websocket:latest
+#   docker tag coinbase-websocket ${AWS_ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com/coinbase-websocket:latest
+#   docker push ${AWS_ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com/coinbase-websocket:latest
 
 FROM python:3.12-slim-bookworm
 

@@ -9,7 +9,7 @@ from aws_cdk import (
 )
 from constructs import Construct
 
-KINESIS_STREAM_ARN = "arn:aws:kinesis:us-east-1:391262527903:stream/raw-trade-data"
+STREAM_NAME = "crypto-trade-stream"
 
 
 class EcsWebsocketStack(Stack):
@@ -34,6 +34,8 @@ class EcsWebsocketStack(Stack):
         vpc = ec2.Vpc.from_lookup(self, "Vpc", vpc_id=vpc_id)
         subnet = ec2.Subnet.from_subnet_id(self, "Subnet", subnet_id)
 
+        kinesis_stream_arn = f"arn:aws:kinesis:{self.region}:{self.account}:stream/{STREAM_NAME}"
+
         # --- IAM: task role (container → Kinesis) ---
         task_role = iam.Role(
             self,
@@ -47,7 +49,7 @@ class EcsWebsocketStack(Stack):
                             sid="AllowWriteToKinesisStream",
                             effect=iam.Effect.ALLOW,
                             actions=["kinesis:PutRecord", "kinesis:PutRecords"],
-                            resources=[KINESIS_STREAM_ARN],
+                            resources=[kinesis_stream_arn],
                         )
                     ]
                 )
@@ -113,6 +115,7 @@ class EcsWebsocketStack(Stack):
             self,
             "EcsCluster",
             cluster_name="crypto-websocket-cluster",
+            vpc=vpc,
         )
         cdk.Tags.of(cluster).add("Application", "CoinbaseDataFlow")
 
@@ -170,7 +173,7 @@ class EcsWebsocketStack(Stack):
         task_def.add_container(
             "websocket-consumer",
             image=ecs.ContainerImage.from_registry(ecr_image_uri),
-            command=[product_id],
+            command=[product_id, STREAM_NAME],
             memory_limit_mib=256,
             memory_reservation_mib=128,
             essential=True,

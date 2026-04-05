@@ -10,8 +10,9 @@ from aws_cdk import (
 from constructs import Construct
 
 S3_PREFIX = "coinbase/raw/!{timestamp:yyyy/MM/dd}/"
-STREAM_NAME = "raw-trade-data"
-FIREHOSE_NAME = "KDS-S3-trade-data"
+S3_PREFIX_ERROR = "coinbase/errors/type=!{firehose:error-output-type}/!{timestamp:yyyy/MM/dd}/"
+STREAM_NAME = "crypto-trade-stream"
+FIREHOSE_NAME = "crypto-trade-firehose"
 
 
 class FirehoseTransformStack(Stack):
@@ -27,7 +28,7 @@ class FirehoseTransformStack(Stack):
         lambda_role = iam.Role(
             self,
             "FirehoseTransformRole",
-            role_name="coinbase-firehose-transform-role",
+            role_name="crypto-firehose-transform-role",
             assumed_by=iam.ServicePrincipal("lambda.amazonaws.com"),
             inline_policies={
                 "CloudWatchLogs": iam.PolicyDocument(
@@ -40,7 +41,7 @@ class FirehoseTransformStack(Stack):
                                 "logs:PutLogEvents",
                             ],
                             resources=[
-                                f"arn:aws:logs:{self.region}:{self.account}:log-group:/aws/lambda/coinbase-firehose-transform:*"
+                                f"arn:aws:logs:{self.region}:{self.account}:log-group:/aws/lambda/crypto-firehose-transform:*"
                             ],
                         )
                     ]
@@ -51,7 +52,7 @@ class FirehoseTransformStack(Stack):
         lambda_transform_fn = lambda_.Function(
             self,
             "FirehoseTransformFunction",
-            function_name="coinbase-firehose-transform",
+            function_name="crypto-firehose-transform",
             runtime=lambda_.Runtime.PYTHON_3_12,
             handler="lambda_function.lambda_handler",
             code=lambda_.Code.from_asset("../lambda"),
@@ -74,7 +75,7 @@ class FirehoseTransformStack(Stack):
         firehose_role = iam.Role(
             self,
             "FirehoseDeliveryRole",
-            role_name="coinbase-firehose-delivery-role",
+            role_name="crypto-firehose-delivery-role",
             assumed_by=iam.ServicePrincipal("firehose.amazonaws.com"),
             inline_policies={
                 "KinesisRead": iam.PolicyDocument(
@@ -149,7 +150,7 @@ class FirehoseTransformStack(Stack):
             extended_s3_destination_configuration=firehose.CfnDeliveryStream.ExtendedS3DestinationConfigurationProperty(
                 bucket_arn=f"arn:aws:s3:::{bucket_name}",
                 prefix=S3_PREFIX,
-                error_output_prefix="coinbase/errors/type=!{firehose:error-output-type}/!{timestamp:yyyy/MM/dd}/",
+                error_output_prefix=S3_PREFIX_ERROR,
                 role_arn=firehose_role.role_arn,
                 buffering_hints=firehose.CfnDeliveryStream.BufferingHintsProperty(
                     interval_in_seconds=60,
