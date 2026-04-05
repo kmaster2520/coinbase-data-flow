@@ -8,6 +8,6 @@ SELECT
     price,
     tradeTime
 FROM
-    {{ ref('raw_coinbase_data') }}
+    {{ ref('trades_timeseries') }}
 WHERE
     tradeTime >= current_timestamp() - INTERVAL '25 HOURS'
