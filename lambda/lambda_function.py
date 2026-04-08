@@ -27,7 +27,6 @@ EXAMPLE_EVENT = {
 
 def lambda_handler(event, context):
 
-    print("Event: " + json.dumps(event))
     transformed_records = []
 
     for evt in event.get("records", []):
