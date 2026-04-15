@@ -64,6 +64,7 @@ along the AWS backbone, a small optimization.
 The following must already exist in the AWS account and region of deployment:
 * A VPC with at least one public subnet and one private subnet with route tables
   * A NAT Gateway in the public subnet
+  * enableDnsHostnames and enableDnsSupport must be enabled
 * An S3 bucket
 * CDK must be bootstrapped (run `cdk bootstrap`)
   * `cdk bootstrap aws://ACCOUNT-NUMBER/REGION` (replace values)
